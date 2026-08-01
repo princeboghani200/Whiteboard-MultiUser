@@ -60,16 +60,68 @@ const Whiteboard = ({ boardId }) => {
       });
     });
 
+    let lastEmit = 0;
+    const handleMouseMove = (opt) => {
+      const now = Date.now();
+      if (now - lastEmit < 50) return;
+      lastEmit = now;
+
+      const pointer = canvas.getViewportPoint(opt.e);
+      socket.emit("cursor-move", {
+        boardId,
+        x: pointer.x,
+        y: pointer.y,
+        name: "You",
+      });
+    };
+
+    canvas.on("mouse:move", handleMouseMove);
+
+    const cursorElement = {};
+
+    socket.on("cursor-move", ({ socketId, x, y, name }) => {
+      let el = cursorElement[socketId];
+
+      if (!el) {
+        el = document.createElement("div");
+        el.style.position = "absolute";
+        el.style.pointerEvents = "none";
+        el.style.fontSize = "12px";
+        el.style.background = "#4f46e5";
+        el.style.color = "white";
+        el.style.padding = "2px 6px";
+        el.style.borderRadius = "4px";
+        el.style.zIndex = 1000;
+        el.innerText = name;
+        canvasElRef.current.parentElement.appendChild(el);
+        cursorElement[socketId] = el;
+      }
+
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    });
+
+    socket.on("cursor-remove", ({ socketId }) => {
+      const el = cursorElement[socketId];
+      if (el) {
+        el.remove();
+        delete cursorElement[socketId];
+      }
+    });
+
     return () => {
       canvas.dispose();
       fabricCanvasRef.current = null;
       socket.off("element-add");
       socket.off("board-sync");
+      socket.off("cursor-move");
+      socket.off("cursor-remove");
+      Object.values(cursorElement).forEach((el) => el.remove());
     };
   }, [boardId]);
 
   return (
-    <div style={{ border: "1px solid #ccc", display: "inline-block" }}>
+    <div style={{ border: "1px solid #ccc", display: "inline-block", position: "relative" }}>
       <canvas ref={canvasElRef} />
     </div>
   );

@@ -60,6 +60,12 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
+    io.emit("cursor-remove", { socketId: socket.id });
+  });
+
+  socket.on("cursor-move", ({ boardId, x, y, name }) => {
+    // console.log("cursor-move received:", boardId, x, y, name);
+    socket.to(boardId).emit("cursor-move", { socketId: socket.id, x, y, name });
   });
 });
 
