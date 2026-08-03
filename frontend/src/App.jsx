@@ -1,36 +1,27 @@
-import { useEffect, useState } from "react";
-import socket from "./socket";
-import Whiteboard from "./components/Whiteboard";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
+import BoardPage from "./pages/BoardPage";
 
-function App() {
-  const [boardId, setBoardId] = useState("");
-  const [joined, setJoined] = useState(false);
-
-  const handleJoin = () => {
-    socket.connect();
-    socket.emit("join-room", boardId);
-    setJoined(true);
-  };
-
+const App = () => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>WhiteBoard Socket test</h2>
-      {!joined ? (
-        <div>
-          <input
-            type="text"
-            placeholder="Paste your board id here"
-            value={boardId}
-            onChange={(e) => setBoardId(e.target.value)}
-            style={{ width: "300px", marginRight: "1rem" }}
-          />
-          <button onClick={handleJoin}>Join Room</button>
-        </div>
-      ) : (
-        <Whiteboard boardId={boardId} />
-      )}
-    </div>
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/board/:boardId"
+          element={
+            <ProtectedRoute>
+              <BoardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;

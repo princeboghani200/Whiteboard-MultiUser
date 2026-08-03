@@ -4,7 +4,7 @@ import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import socket from "../socket";
 
-const Whiteboard = ({ boardId }) => {
+const Whiteboard = ({ boardId, userName }) => {
   const canvasElRef = useRef(null);
   const fabricCanvasRef = useRef(null);
 
@@ -71,7 +71,7 @@ const Whiteboard = ({ boardId }) => {
         boardId,
         x: pointer.x,
         y: pointer.y,
-        name: "You",
+        name: userName || "Anonymous",
       });
     };
 
@@ -121,7 +121,13 @@ const Whiteboard = ({ boardId }) => {
   }, [boardId]);
 
   return (
-    <div style={{ border: "1px solid #ccc", display: "inline-block", position: "relative" }}>
+    <div
+      style={{
+        border: "1px solid #ccc",
+        display: "inline-block",
+        position: "relative",
+      }}
+    >
       <canvas ref={canvasElRef} />
     </div>
   );
