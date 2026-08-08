@@ -18,7 +18,7 @@ const Register = () => {
     try {
       const res = await api.post("auth/register", { name, email, password });
       login(res.data.user, res.data.accessToken, res.data.refreshToken);
-      navigate("/board/6a69923498186e18a3e5b584");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Registration error:", err);
       setError(err.response?.data?.message || "Something went wrong");

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Whiteboard from "../components/Whiteboard";
 import socket from "../socket";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const BoardPage = () => {
   const { boardId } = useParams();
@@ -33,6 +34,9 @@ const BoardPage = () => {
               Logged in as {user?.name}
             </span>
             <button onClick={logout}>Logout</button>
+            <Link to="/dashboard" style={{ marginRight: "1rem" }}>
+              ← My Boards
+            </Link>
           </div>
         </div>
 
