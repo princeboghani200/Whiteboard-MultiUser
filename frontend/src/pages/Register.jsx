@@ -27,47 +27,32 @@ const Register = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "400px", margin: "4rem auto" }}>
+      <div className="auth-container">
         <h2>Register</h2>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="error-text">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{
-              display: "block",
-              width: "100%",
-              marginBottom: "1rem",
-              padding: "0.5rem",
-            }}
+            className="form-input"
           />
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{
-              display: "block",
-              width: "100%",
-              marginBottom: "1rem",
-              padding: "0.5rem",
-            }}
+            className="form-input"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{
-              display: "block",
-              width: "100%",
-              marginBottom: "1rem",
-              padding: "0.5rem",
-            }}
+            className="form-input"
           />
-          <button type="submit" style={{ width: "100%", padding: "0.5rem" }}>
+          <button type="submit" className="btn btn-full">
             Register
           </button>
         </form>

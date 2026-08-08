@@ -20,28 +20,18 @@ const BoardPage = () => {
 
   return (
     <>
-      <div style={{ padding: "2rem" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "1rem",
-          }}
-        >
-          <h2>Board: {boardId}</h2>
-          <div>
-            <span style={{ marginRight: "1rem" }}>
-              Logged in as {user?.name}
-            </span>
-            <button onClick={logout}>Logout</button>
-            <Link to="/dashboard" style={{ marginRight: "1rem" }}>
-              ← My Boards
-            </Link>
-          </div>
+      <div className="board-page-header">
+        <h2>Board: {boardId}</h2>
+        <div className="board-page-nav">
+          <span className="board-page-user">Logged in as {user?.name}</span>
+          <Link to="/dashboard" className="board-page-link">
+            ← My Boards
+          </Link>
+          <button className="btn-secondary" onClick={logout}>Logout</button>
         </div>
-
-        <Whiteboard boardId={boardId} userName={user?.name} />
       </div>
+
+      <Whiteboard boardId={boardId} userName={user?.name} />
     </>
   );
 };
