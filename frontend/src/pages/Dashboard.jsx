@@ -143,7 +143,7 @@ const Dashboard = () => {
           </div>
           <button
             onClick={logout}
-            className="w-full text-left text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            className="w-full text-left text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
           >
             <span className="px-3 flex py-2 rounded-lg  font-medium">
               <LogOut />
@@ -188,7 +188,7 @@ const Dashboard = () => {
             />
             <button
               type="submit"
-              className="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
+              className="cursor-pointer px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
             >
               <FolderPlus size={18} />{" "}
               <h4 className="flex items-center ">New Board</h4>
@@ -205,7 +205,7 @@ const Dashboard = () => {
             />
             <button
               type="submit"
-              className="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
+              className="cursor-pointer px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
             >
               <Plus size={18} />
               <h4 className="flex items-center ">Join</h4>

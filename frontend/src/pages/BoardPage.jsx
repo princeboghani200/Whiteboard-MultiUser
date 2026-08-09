@@ -52,9 +52,9 @@ const BoardPage = () => {
         <div className="flex items-center gap-4">
           <Link
             to="/dashboard"
-            className="text-indigo-600 text-sm font-medium hover:underline flex items-center gap-1"
+            className="text-indigo-600 text-sm font-medium hover:underline inline-flex items-center gap-1 "
           >
-            ← My Boards
+            <ArrowLeft size={16} /> <h4 className="leading-none">Back</h4>
           </Link>
           <span className="text-gray-300">|</span>
           <h2 className="text-sm font-mono text-gray-600">
@@ -80,7 +80,7 @@ const BoardPage = () => {
 
           <button
             onClick={logout}
-            className="px-4 py-1.5 border border-red-400 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+            className="cursor-pointer px-4 py-1.5 border border-red-400 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
           >
             Logout
           </button>
