@@ -190,10 +190,11 @@ const Dashboard = () => {
               type="submit"
               className="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
             >
-              <FolderPlus size={18}/> <h4 className="flex items-center ">New Board</h4>
+              <FolderPlus size={18} />{" "}
+              <h4 className="flex items-center ">New Board</h4>
             </button>
           </form>
-        
+
           <form onSubmit={handleJoinBoard} className="flex gap-2 flex-1">
             <input
               type="text"
@@ -206,12 +207,11 @@ const Dashboard = () => {
               type="submit"
               className="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
             >
-              <Plus size={18}/><h4 className="flex items-center ">Join</h4>
+              <Plus size={18} />
+              <h4 className="flex items-center ">Join</h4>
             </button>
           </form>
         </div>
-
-        {/* Board sections */}
         <BoardSection
           title="My Boards"
           boards={ownedBoards}

@@ -27,7 +27,7 @@ const BoardPage = () => {
             to="/dashboard"
             className="text-indigo-600 text-sm font-medium hover:underline flex items-center gap-1"
           >
-            <ArrowLeft size={18}/> My Boards
+            <ArrowLeft size={18} /> My Boards
           </Link>
           <span className="text-gray-300">|</span>
           <h2 className="text-sm font-mono text-gray-600">Board: {boardId}</h2>
@@ -48,8 +48,6 @@ const BoardPage = () => {
           </button>
         </div>
       </header>
-
-      {/* Canvas */}
       <div className="flex justify-center p-8">
         <Whiteboard boardId={boardId} userName={user?.name} />
       </div>
