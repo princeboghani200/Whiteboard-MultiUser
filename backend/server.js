@@ -22,21 +22,27 @@ app.use("/api/auth", authRoutes);
 const boardRoutes = require("./routes/boardRoutes");
 app.use("/api/boards", boardRoutes);
 
-// Socket.io connection handling — we'll expand this in Step 9
 const Board = require("./models/Board");
 
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
-  // Client tells us which board they want to join
-  socket.on("join-room", async (boardId) => {
+  socket.on("join-room", async (boardId, userName) => {
     socket.join(boardId);
-    console.log(`Socket ${socket.id} joined room ${boardId}`);
+    socket.data.boardId = boardId;
+    socket.data.userName = userName;
+
+    if (!activeUsers[boardId]) activeUsers[boardId] = {};
+    activeUsers[boardId][socket.id] = { name: userName };
+
+    socket.to(boardId).emit("user-joined", { name: userName });
+
+    const currentUsers = Object.values(activeUsers[boardId]);
+    io.to(boardId).emit("active-users", currentUsers);
 
     try {
       const board = await Board.findById(boardId);
       if (board) {
-        // Send the current full board state ONLY to this newly joined client
         socket.emit("board-sync", board.elements);
       }
     } catch (err) {
@@ -46,10 +52,8 @@ io.on("connection", (socket) => {
 
   socket.on("element-add", async ({ boardId, element }) => {
     try {
-      // Broadcast to everyone else in the room (NOT back to the sender)
       socket.to(boardId).emit("element-add", element);
 
-      // Persist to MongoDB
       await Board.findByIdAndUpdate(boardId, {
         $push: { elements: element },
       });
@@ -60,14 +64,29 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
-    io.emit("cursor-remove", { socketId: socket.id });
+
+    const { boardId, userName } = socket.data;
+
+    if (boardId && activeUsers[boardId]) {
+      delete activeUsers[boardId][socket.id];
+
+      socket.to(boardId).emit("user-left", { name: userName });
+
+      const currentUsers = Object.values(activeUsers[boardId]);
+      io.to(boardId).emit("active-users", currentUsers);
+
+      if (Object.keys(activeUsers[boardId]).length === 0) {
+        delete activeUsers[boardId];
+      }
+    }
   });
 
   socket.on("cursor-move", ({ boardId, x, y, name }) => {
-    // console.log("cursor-move received:", boardId, x, y, name);
     socket.to(boardId).emit("cursor-move", { socketId: socket.id, x, y, name });
   });
 });
+
+const activeUsers = {};
 
 connectDB().then(() => {
   const PORT = process.env.PORT || 5000;
