@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import socket from "../socket";
@@ -7,6 +7,36 @@ import socket from "../socket";
 const Whiteboard = ({ boardId, userName }) => {
   const canvasElRef = useRef(null);
   const fabricCanvasRef = useRef(null);
+  const [activeTool, setActiveTool] = useState("pencil");
+  const activeToolRef = useRef("pencil");
+
+  const setTool = (tool) => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    setActiveTool(tool);
+    activeToolRef.current = tool;
+
+    if (tool === "pencil") {
+      canvas.isDrawingMode = true;
+      canvas.selection = false;
+    } else if (tool === "select") {
+      canvas.isDrawingMode = false;
+      canvas.selection = true;
+    } else {
+      canvas.isDrawingMode = false;
+      canvas.selection = false;
+    }
+  };
+
+  const addElementToCanvas = async (element) => {
+    let shape;
+
+    if (shape) {
+      shape.set("elementId", element.id);
+      canvas.add(shape);
+    }
+  };
 
   useEffect(() => {
     if (fabricCanvasRef.current) return;
@@ -32,32 +62,66 @@ const Whiteboard = ({ boardId, userName }) => {
         data: path.toObject(),
       };
 
-      // Tag the path itself with our element id, so we can match it later if needed
       path.set("elementId", element.id);
 
       socket.emit("element-add", { boardId, element });
     });
 
-    // Listen for elements drawn by OTHER users
-    socket.on("element-add", (element) => {
-      if (element.type === "path") {
-        fabric.Path.fromObject(element.data).then((path) => {
-          path.set("elementId", element.id);
-          canvas.add(path);
+    canvas.on("mouse:down", (opt) => {
+      const tool = activeToolRef.current;
+      if (tool !== "rect" && tool !== "circle" && tool !== "text") return;
+
+      const pointer = canvas.getViewportPoint(opt.e);
+      let shape;
+
+      if (tool === "rect") {
+        shape = new fabric.Rect({
+          left: pointer.x,
+          top: pointer.y,
+          width: 100,
+          height: 60,
+          fill: "transparent",
+          stroke: "#000000",
+          strokeWidth: 2,
+        });
+      } else if (tool === "circle") {
+        shape = new fabric.Circle({
+          left: pointer.x,
+          top: pointer.y,
+          radius: 40,
+          fill: "transparent",
+          stroke: "#000000",
+          strokeWidth: 2,
+        });
+      } else if (tool === "text") {
+        shape = new fabric.IText("Type here", {
+          left: pointer.x,
+          top: pointer.y,
+          fontSize: 20,
+          fill: "#000000",
         });
       }
+
+      const elementId = uuidv4();
+      shape.set("elementId", elementId);
+      canvas.add(shape);
+
+      const element = {
+        id: elementId,
+        type: tool,
+        data: shape.toObject(),
+      };
+      socket.emit("element-add", { boardId, element });
+
+      setTool("select");
     });
 
-    // Handle initial board-sync (existing elements when joining)
+    socket.on("element-add", (element) => {
+      addElementToCanvas(element);
+    });
+
     socket.on("board-sync", (elements) => {
-      elements.forEach((element) => {
-        if (element.type === "path") {
-          fabric.Path.fromObject(element.data).then((path) => {
-            path.set("elementId", element.id);
-            canvas.add(path);
-          });
-        }
-      });
+      elements.forEach((element) => addElementToCanvas(element));
     });
 
     let lastEmit = 0;
@@ -121,15 +185,54 @@ const Whiteboard = ({ boardId, userName }) => {
   }, [boardId]);
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        display: "inline-block",
-        position: "relative",
-      }}
-    >
-      <canvas ref={canvasElRef} />
+    <div className="flex flex-1 justify-center gap-12 ">
+      <div className="flex flex-col gap-2 mb-3 bg-white p-2 rounded-lg border border-gray-200 w-fit">
+        <ToolButton
+          active={activeTool === "select"}
+          onClick={() => setTool("select")}
+          label="Select"
+        />
+        <ToolButton
+          active={activeTool === "pencil"}
+          onClick={() => setTool("pencil")}
+          label="Pencil"
+        />
+        <ToolButton
+          active={activeTool === "rect"}
+          onClick={() => setTool("rect")}
+          label="Rectangle"
+        />
+        <ToolButton
+          active={activeTool === "circle"}
+          onClick={() => setTool("circle")}
+          label="Circle"
+        />
+        <ToolButton
+          active={activeTool === "text"}
+          onClick={() => setTool("text")}
+          label="Text"
+        />
+      </div>
+
+      <div className="border-2 flex justify-center ms-12"
+        
+      >
+        <canvas ref={canvasElRef} />
+      </div>
     </div>
+  );
+};
+
+const ToolButton = ({ active, onClick, label }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+        active ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"
+      }`}
+    >
+      {label}
+    </button>
   );
 };
 
