@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as fabric from "fabric";
 import { v4 as uuidv4 } from "uuid";
 import socket from "../socket";
+import { Circle, MousePointer2, Pencil, Square, Text, Type } from "lucide-react";
 
 const Whiteboard = ({ boardId, userName }) => {
   const canvasElRef = useRef(null);
@@ -224,32 +225,32 @@ const Whiteboard = ({ boardId, userName }) => {
   }, [boardId]);
 
   return (
-    <div className="flex flex-1 justify-center gap-12 ">
-      <div className="flex flex-col gap-2 mb-3 bg-white p-2 rounded-lg border border-gray-200 w-fit">
+    <div className="flex flex-1 justify-center gap-12">
+      <div className="flex flex-col gap-2 mb-3 bg-gray-200 p-2 rounded-lg border border-gray-200 h-fit">
         <ToolButton
           active={activeTool === "select"}
           onClick={() => setTool("select")}
-          label="Select"
+          icon ={MousePointer2}
         />
         <ToolButton
           active={activeTool === "pencil"}
           onClick={() => setTool("pencil")}
-          label="Pencil"
+          icon = {Pencil}
         />
         <ToolButton
           active={activeTool === "rect"}
           onClick={() => setTool("rect")}
-          label="Rectangle"
+          icon = {Square}
         />
         <ToolButton
           active={activeTool === "circle"}
           onClick={() => setTool("circle")}
-          label="Circle"
+          icon = {Circle}
         />
         <ToolButton
           active={activeTool === "text"}
           onClick={() => setTool("text")}
-          label="Text"
+          icon = {Type}
         />
       </div>
 
@@ -260,15 +261,17 @@ const Whiteboard = ({ boardId, userName }) => {
   );
 };
 
-const ToolButton = ({ active, onClick, label }) => {
+const ToolButton = ({ active, onClick, label,icon : Icon }) => {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        active ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"
+      className={`w-11 h-11 flex items-center justify-center rounded-lg transition-all duration-150 ${
+        active
+          ? "bg-indigo-600 text-white shadow-md scale-105"
+          : "text-gray-500 hover:bg-white hover:text-gray-800"
       }`}
     >
-      {label}
+      <Icon size={20} strokeWidth={2} />
     </button>
   );
 };
