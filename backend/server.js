@@ -62,6 +62,19 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("element-update", async ({ boardId, element }) => {
+    try {
+      socket.to(boardId).emit("element-update", element);
+
+      await Board.updateOne(
+        { _id: boardId, "elements.id": element.id },
+        { $set: { "elements.$.data": element.data } },
+      );
+    } catch (err) {
+      console.error("Error handling element-update:", err.message);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
 

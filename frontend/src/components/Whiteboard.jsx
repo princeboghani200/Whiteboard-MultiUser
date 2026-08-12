@@ -134,6 +134,30 @@ const Whiteboard = ({ boardId, userName }) => {
       elements.forEach((element) => addElementToCanvas(element));
     });
 
+    canvas.on("object:modified", (e) => {
+      const obj = e.target;
+      if (!obj || !obj.elementId) return;
+
+      const element = {
+        id: obj.elementId,
+        type: obj.elementId ? obj.type : null,
+        data: obj.toObject(),
+      };
+
+      socket.emit("element-update", { boardId, element });
+    });
+
+    socket.on("element-update", (element) => {
+      const canvasObjects = canvas.getObjects();
+      const target = canvasObjects.find((obj) => obj.elementId === element.id);
+
+      if (target) {
+        target.set(element.data);
+        target.setCoords();
+        canvas.requestRenderAll();
+      }
+    });
+
     let lastEmit = 0;
     const handleMouseMove = (opt) => {
       const now = Date.now();
