@@ -84,6 +84,7 @@ io.on("connection", (socket) => {
       delete activeUsers[boardId][socket.id];
 
       socket.to(boardId).emit("user-left", { name: userName });
+      socket.to(boardId).emit("cursor-remove", { socketId: socket.id });
 
       const currentUsers = Object.values(activeUsers[boardId]);
       io.to(boardId).emit("active-users", currentUsers);

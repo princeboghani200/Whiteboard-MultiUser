@@ -31,6 +31,11 @@ const Whiteboard = ({ boardId, userName }) => {
 
   useEffect(() => {
     const addElementToCanvas = async (element) => {
+      const alreadyExists = canvas
+        .getObjects()
+        .some((obj) => obj.elementId === element.id);
+      if (alreadyExists) return;
+
       let shape;
 
       if (element.type === "path") {
