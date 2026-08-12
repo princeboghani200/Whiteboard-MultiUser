@@ -29,16 +29,26 @@ const Whiteboard = ({ boardId, userName }) => {
     }
   };
 
-  const addElementToCanvas = async (element) => {
-    let shape;
-
-    if (shape) {
-      shape.set("elementId", element.id);
-      canvas.add(shape);
-    }
-  };
-
   useEffect(() => {
+    const addElementToCanvas = async (element) => {
+      let shape;
+
+      if (element.type === "path") {
+        shape = await fabric.Path.fromObject(element.data);
+      } else if (element.type === "rect") {
+        shape = await fabric.Rect.fromObject(element.data);
+      } else if (element.type === "circle") {
+        shape = await fabric.Circle.fromObject(element.data);
+      } else if (element.type === "text") {
+        shape = await fabric.IText.fromObject(element.data);
+      }
+
+      if (shape) {
+        shape.set("elementId", element.id);
+        canvas.add(shape);
+      }
+    };
+
     if (fabricCanvasRef.current) return;
     const canvas = new fabric.Canvas(canvasElRef.current, {
       isDrawingMode: true,
@@ -214,9 +224,7 @@ const Whiteboard = ({ boardId, userName }) => {
         />
       </div>
 
-      <div className="border-2 flex justify-center ms-12"
-        
-      >
+      <div className="border-2 flex justify-center ms-12">
         <canvas ref={canvasElRef} />
       </div>
     </div>
