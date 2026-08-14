@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://whiteboard-backend-nfzb.onrender.com",
+  baseURL: "https://whiteboard-backend-nfzb.onrender.com/api",
 });
 
 api.interceptors.request.use((config) => {
