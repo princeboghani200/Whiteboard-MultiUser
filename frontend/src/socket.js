@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000", {
-  autoConnect: false, // we'll manually connect when needed
+const socket = io("https://whiteboard-backend-nfzb.onrender.com", {
+  autoConnect: false,
 });
 
 export default socket;
